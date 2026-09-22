@@ -1,304 +1,234 @@
 import Image from "next/image"
+import { ArrowUpRight, FileText, Heart } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
-// put this link in somehwere https://hcb.hackclub.com/donations/start/woss-electrathon
+export const metadata = {
+  title: "Sponsors — WOSS Electrathon",
+  description:
+    "The partners behind WOSS Electrathon — and how your organization can put students in the shop and a car on the grid.",
+}
+
+const partners = [
+  {
+    name: "Atura Power",
+    role: "Season sponsor",
+    detail: "An Ontario power generator investing in the next generation of energy and engineering talent.",
+    href: "https://aturapower.com/",
+    logo: "/images/sponsers/atura.webp",
+  },
+  {
+    name: "Lions Club of Oakville",
+    role: "Season sponsor",
+    detail: "Serving the Oakville community for decades, invested in hands-on STEM education.",
+    logo: "/images/sponsers/lions.png",
+  },
+  {
+    name: "Orbit Robotics",
+    role: "Technical support",
+    detail: "Build support and technical guidance throughout the WarRig X2 season.",
+  },
+]
+
+// Bronze tier: small logo and name on the website, per the 2027 sponsorship packet
+const bronzeSponsors = [
+  {
+    name: "Maple Spark",
+    href: "https://maplespark.ai",
+    logo: "/images/sponsers/maplespark.png",
+  },
+]
+
+const tiers = [
+  {
+    name: "Bronze",
+    range: "Up to $500",
+    detail: "Small logo or company name on the website and team uniform.",
+  },
+  {
+    name: "Silver",
+    range: "$500 – $1,000",
+    detail: "Logo on the car, printed materials, uniforms, and banners, plus season-long social media acknowledgement.",
+  },
+  {
+    name: "Gold",
+    range: "$1,000 – $1,500",
+    detail: "Medium logo on the car, website, uniforms, and banners, plus season-long social media acknowledgement.",
+  },
+  {
+    name: "Diamond",
+    range: "$2,000+",
+    detail: "Prominent logo placement everywhere the team appears, plus dedicated customizable marketing.",
+  },
+]
+
+const reasons = [
+  {
+    title: "Your logo races",
+    detail: "Sponsor branding rides on car #843 at every event and lives on this site year-round.",
+  },
+  {
+    title: "Real engineering, not a demo",
+    detail:
+      "Students design, machine, weld, and wire everything — then defend it in a judged engineering design report.",
+  },
+  {
+    title: "Thirty-plus students and counting",
+    detail:
+      "Weekly open workshops have introduced more than thirty students to CAD, manufacturing, electronics, and embedded programming.",
+  },
+]
 
 export default function SponsorsPage() {
-  const sponsors = [
-    {
-      name: "Altura Power",
-      tier: "platinum",
-      logo: "/images/sponsers/atura.webp?height=120&width=240",
-      description: "Pioneering the future of renewable energy technology and sustainable power solutions.",
-      website: "https://aturapower.com/"
-    },
-    {
-      name: "Pretium Engineering",
-      tier: "platinum",
-      logo: "/images/sponsers/preng.avif?height=120&width=240",
-      description: "Leading building scientists and engineers providing expert consulting in building science, mechanical and structural engineering across the complete lifecycle of buildings.",
-      website: "https://pretiumengineering.com/"
-    },
-    {
-      name: "Stack Adapt",
-      tier: "gold",
-      logo: "/images/sponsers/stat.png?height=120&width=240",
-      description: "Leading AI-powered programmatic advertising platform enabling brands to execute multi-channel campaigns across native, display, video, and other digital formats with advanced targeting and optimization capabilities.",
-    },
-    {
-      name: "HackClub Bank",
-      tier: "gold",
-      logo: "/images/sponsers/hcb.png?height=120&width=240",
-      description: "Empowering student projects through accessible fiscal sponsorship and financial tools.",
-    },
-    {
-      name: "GitHub",
-      tier: "silver",
-      logo: "/images/sponsers/git.png?height=120&width=240",
-      description: "The world's leading platform for software development and collaboration.",
-    },
-    {
-      name: "University of Waterloo Engineering",
-      tier: "bronze",
-      logo: "/images/sponsers/images.png?height=120&width=240",
-      description: "Canada's largest engineering school, fostering innovation and technical excellence.",
-    },
-  ]
-
   return (
-    <div className="min-h-screen">
-      {/* Hero Section */}
-      <section className="relative h-screen flex items-center justify-center overflow-hidden">
-      <div className="absolute inset-0 z-0">
-        <Image src="/images/sponsers/tspmo.png?height=600&width=1600" alt="Sponsors" fill priority className="object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-b from-background/70 via-background/50 to-background" />
-        </div>
-
-        <div className="container relative z-10 px-4 md:px-6">
-          <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl text-center">
-            Our Sponsors
+    <>
+      {/* Hero */}
+      <section className="border-b">
+        <div className="container px-4 pb-16 pt-40 md:px-6">
+          <p className="font-mono text-xs uppercase tracking-widest text-muted-foreground mb-4">Sponsors</p>
+          <h1 className="font-display text-4xl font-bold tracking-tight sm:text-6xl">
+            Backed by our community
           </h1>
-          <p className="mt-4 text-xl text-muted-foreground max-w-[700px] mx-auto text-center">
-            The partners who make our racing program possible through their generous support.
+          <p className="mt-5 max-w-2xl text-lg text-muted-foreground">
+            Racing an electric car costs real money — motors, aluminum, batteries, entry fees. Our partners
+            make it possible.
           </p>
         </div>
       </section>
 
-      {/* Platinum Sponsors */}
-      <section className="py-20 md:py-32 bg-background">
-        <div className="container px-4 md:px-6">
-          <div className="text-center mb-16 space-y-4">
-            <div className="inline-block rounded-lg bg-primary/10 px-3 py-1 text-sm text-primary">
-              Platinum Sponsors
-            </div>
-            <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">Our Major Partners</h2>
-            <p className="text-muted-foreground text-lg max-w-[800px] mx-auto">
-              These organizations provide significant financial and technical support to our team.
-            </p>
-          </div>
-
-            <div className="grid md:grid-cols-2 gap-8">
-            {sponsors
-              .filter((s) => s.tier === "platinum")
-              .map((sponsor) => (
-              <div
-                key={sponsor.name}
-                className="bg-black/50 backdrop-blur-sm rounded-xl overflow-hidden border border-primary/20 hover:border-primary/50 transition-colors"
-              >
-                <div className="p-8 flex flex-col items-center text-center">
-                <div className="relative h-24 w-48 mb-6">
-                  <Image
-                  src={sponsor.logo || "/placeholder.svg"}
-                  alt={sponsor.name}
-                  fill
-                  className="object-contain"
-                  />
-                </div>
-                <h3 className="text-2xl font-bold">{sponsor.name}</h3>
-                <p className="text-muted-foreground mt-2">{sponsor.description}</p>
-                {sponsor.website ? (
-                  <Button 
-                  variant="outline" 
-                  className="mt-6 rounded-full" 
-                  asChild
-                  >
-                  <a href={sponsor.website} target="_blank" rel="noopener noreferrer">
-                    Visit Website
-                  </a>
-                  </Button>
-                ) : (
-                  <Button variant="outline" className="mt-6 rounded-full" disabled>
-                  Visit Website
-                  </Button>
+      {/* Current partners */}
+      <section aria-labelledby="partners-heading">
+        <div className="container px-4 py-20 md:px-6 md:py-28">
+          <h2 id="partners-heading" className="font-display text-2xl font-semibold tracking-tight sm:text-3xl">
+            Our partners
+          </h2>
+          <ul className="mt-10 grid gap-px overflow-hidden rounded-lg border bg-border md:grid-cols-3">
+            {partners.map((partner) => (
+              <li key={partner.name} className="bg-card p-8">
+                {partner.logo && (
+                  <div className="relative mb-6 h-16 w-40">
+                    <Image src={partner.logo} alt="" fill className="object-contain object-left" />
+                  </div>
                 )}
-                </div>
-              </div>
-              ))}
-            </div>
-        </div>
-      </section>
+                <p className="font-mono text-xs uppercase tracking-wider text-primary">{partner.role}</p>
+                <h3 className="mt-2 font-display text-xl font-semibold">
+                  {partner.href ? (
+                    <a
+                      href={partner.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 hover:text-primary transition-colors duration-200"
+                    >
+                      {partner.name}
+                      <ArrowUpRight className="h-4 w-4 text-muted-foreground" />
+                    </a>
+                  ) : (
+                    partner.name
+                  )}
+                </h3>
+                <p className="mt-2 text-sm text-muted-foreground">{partner.detail}</p>
+              </li>
+            ))}
+          </ul>
 
-      {/* Gold & Silver Sponsors */}
-      <section className="py-20 md:py-32 bg-black">
-        <div className="container px-4 md:px-6">
-          <div className="text-center mb-16 space-y-4">
-            <div className="inline-block rounded-lg bg-primary/10 px-3 py-1 text-sm text-primary">
-              Gold & Silver Sponsors
-            </div>
-            <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">Supporting Partners</h2>
-            <p className="text-muted-foreground text-lg max-w-[800px] mx-auto">
-              These organizations provide valuable support and resources to our racing program.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-6">
-            {sponsors
-              .filter((s) => s.tier === "gold" || s.tier === "silver")
-              .map((sponsor) => (
-                <div
-                  key={sponsor.name}
-                  className="bg-background/5 backdrop-blur-sm p-6 rounded-xl space-y-4 hover:bg-background/10 transition-colors"
+          <h3 className="mt-10 font-mono text-xs uppercase tracking-wider text-muted-foreground">
+            Bronze sponsors
+          </h3>
+          <ul className="mt-4 flex flex-wrap gap-x-10 gap-y-4">
+            {bronzeSponsors.map((sponsor) => (
+              <li key={sponsor.name}>
+                <a
+                  href={sponsor.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-3 font-display text-lg font-medium hover:text-primary transition-colors duration-200"
                 >
-                  <div className="relative h-16 w-32 mx-auto">
-                    <Image
-                      src={sponsor.logo || "/placeholder.svg"}
-                      alt={sponsor.name}
-                      fill
-                      className="object-contain"
-                    />
-                  </div>
-                  <h3 className="text-xl font-bold text-center">{sponsor.name}</h3>
-                  <p className="text-muted-foreground text-center text-sm">{sponsor.description}</p>
-                </div>
-              ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Bronze Sponsors */}
-      <section className="py-20 md:py-32 bg-background">
-        <div className="container px-4 md:px-6">
-          <div className="text-center mb-16 space-y-4">
-            <div className="inline-block rounded-lg bg-primary/10 px-3 py-1 text-sm text-primary">Bronze Sponsors</div>
-            <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">Additional Partners</h2>
-            <p className="text-muted-foreground text-lg max-w-[800px] mx-auto">
-              These organizations contribute to our success through their generous support.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
-            {sponsors
-              .filter((s) => s.tier === "bronze")
-              .map((sponsor) => (
-                <div key={sponsor.name} className="p-4 flex flex-col items-center text-center">
-                  <div className="relative h-12 w-24 mb-4">
-                    <Image
-                      src={sponsor.logo || "/placeholder.svg"}
-                      alt={sponsor.name}
-                      fill
-                      className="object-contain"
-                    />
-                  </div>
-                  <h3 className="text-sm font-medium">{sponsor.name}</h3>
-                </div>
-              ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Become a Sponsor */}
-      <section className="py-20 md:py-32 bg-primary/10">
-        <div className="container px-4 md:px-6">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div className="space-y-6">
-              <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">Become a Sponsor</h2>
-              <p className="text-muted-foreground text-lg">
-              Support the next generation of engineers and sustainable technology by sponsoring our Electrathon Racing
-              Team. We offer various sponsorship tiers with different benefits.
-              </p>
-              <div className="space-y-4">
-              <div className="flex items-start">
-              <div className="h-6 w-6 rounded-full bg-primary/20 flex items-center justify-center mt-0.5 mr-3">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                  className="text-primary"
-                >
-                  <polyline points="20 6 9 17 4 12"></polyline>
-                </svg>
-                </div>
-                <p>Brand visibility on our vehicle, team uniforms, and website</p>
-              </div>
-              <div className="flex items-start">
-                <div className="h-6 w-6 rounded-full bg-primary/20 flex items-center justify-center mt-0.5 mr-3">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="text-primary"
-                >
-                  <polyline points="20 6 9 17 4 12"></polyline>
-                </svg>
-                </div>
-                <p>Opportunities to engage with talented engineering students</p>
-              </div>
-              <div className="flex items-start">
-                <div className="h-6 w-6 rounded-full bg-primary/20 flex items-center justify-center mt-0.5 mr-3">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="text-primary"
-                >
-                  <polyline points="20 6 9 17 4 12"></polyline>
-                </svg>
-                </div>
-                <p>Demonstrate your commitment to sustainability and STEM education</p>
-              </div>
-              <div className="flex items-start">
-                <div className="h-6 w-6 rounded-full bg-primary/20 flex items-center justify-center mt-0.5 mr-3">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="text-primary"
-                >
-                  <polyline points="20 6 9 17 4 12"></polyline>
-                </svg>
-                </div>
-                <p>Tax benefits for supporting educational initiatives</p>
-              </div>
-              </div>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Button size="lg" className="rounded-full" asChild>
-                <a href="/images/sponsorship.pdf" target="_blank" rel="noopener noreferrer">
-                  View Sponsorship Package
+                  <span className="relative h-10 w-10 shrink-0">
+                    <Image src={sponsor.logo} alt="" fill className="object-contain" />
+                  </span>
+                  {sponsor.name}
+                  <ArrowUpRight className="h-4 w-4 text-muted-foreground" />
                 </a>
-                </Button>
-              <Button size="lg" className="rounded-full" variant="secondary" asChild>
-                <a href="https://hcb.hackclub.com/donations/start/woss-electrathon" target="_blank" rel="noopener noreferrer">
-                Donate Now
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      {/* Why sponsor */}
+      <section aria-labelledby="why-heading" className="border-t">
+        <div className="container px-4 py-20 md:px-6 md:py-28">
+          <h2 id="why-heading" className="font-display text-2xl font-semibold tracking-tight sm:text-3xl">
+            Why sponsor a high-school race team
+          </h2>
+          <div className="mt-10 grid gap-10 md:grid-cols-3">
+            {reasons.map((reason) => (
+              <div key={reason.title} className="border-l-2 border-primary pl-5">
+                <h3 className="font-display text-lg font-semibold">{reason.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{reason.detail}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Tiers */}
+      <section aria-labelledby="tiers-heading" className="border-t">
+        <div className="container px-4 py-20 md:px-6 md:py-28">
+          <h2 id="tiers-heading" className="font-display text-2xl font-semibold tracking-tight sm:text-3xl">
+            Sponsorship levels
+          </h2>
+          <ul className="mt-10 grid gap-px overflow-hidden rounded-lg border bg-border sm:grid-cols-2 lg:grid-cols-4">
+            {tiers.map((tier) => (
+              <li key={tier.name} className="bg-card p-6">
+                <p className="font-mono text-xs uppercase tracking-wider text-primary">{tier.range}</p>
+                <h3 className="mt-2 font-display text-lg font-semibold">{tier.name}</h3>
+                <p className="mt-1.5 text-sm text-muted-foreground">{tier.detail}</p>
+              </li>
+            ))}
+          </ul>
+          <p className="mt-6 text-sm text-muted-foreground">
+            Terms are adaptable to meet sponsor requirements — in-kind materials and services are welcome
+            too.
+          </p>
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section aria-labelledby="sponsor-cta-heading" className="border-t">
+        <div className="container px-4 py-20 md:px-6 md:py-28">
+          <div className="rounded-lg border bg-card p-8 md:p-12">
+            <h2 id="sponsor-cta-heading" className="font-display text-2xl font-semibold tracking-tight sm:text-3xl">
+              Put your name on the next build
+            </h2>
+            <p className="mt-3 max-w-2xl text-muted-foreground">
+              Write to us and we'll find the level that fits — or contribute directly through our Hack Club
+              Bank page. Every dollar is student-managed and goes into the program.
+            </p>
+            <div className="mt-6 flex flex-wrap items-center gap-4">
+              <Button asChild size="lg">
+                <a href="mailto:wosselectrathon@gmail.com">wosselectrathon@gmail.com</a>
+              </Button>
+              <Button asChild size="lg" variant="outline">
+                <a
+                  href="https://hcb.hackclub.com/donations/start/woss-electrathon"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Heart className="mr-2 h-4 w-4" />
+                  Donate
                 </a>
               </Button>
-              </div>
-            </div>
-            <div className="relative h-[400px] rounded-xl overflow-hidden">
-              <Image
-                src="/images/team/uw.avif?height=400&width=600"
-                alt="Sponsorship opportunities"
-                fill
-                className="object-cover"
-              />
+              <a
+                href="/docs/sponsorship-2027.pdf"
+                className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors duration-200"
+              >
+                <FileText className="h-4 w-4" />
+                2027 sponsorship packet (PDF)
+              </a>
             </div>
           </div>
         </div>
       </section>
-    </div>
+    </>
   )
 }
-

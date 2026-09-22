@@ -2,31 +2,47 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import { Search, Menu, X } from "lucide-react"
+import { usePathname } from "next/navigation"
+import { Menu, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import Image from "next/image"
 
+const links = [
+  { href: "/", label: "Home" },
+  { href: "/team", label: "Team" },
+  { href: "/car", label: "Car" },
+  { href: "/races", label: "Races" },
+  { href: "/sponsors", label: "Sponsors" },
+]
+
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
+  const pathname = usePathname()
 
-  // Prevent scrolling when menu is open
   useEffect(() => {
-    if (isMenuOpen) {
-      document.body.style.overflow = 'hidden'
-    } else {
-      document.body.style.overflow = 'unset'
-    }
+    document.body.style.overflow = isMenuOpen ? "hidden" : "unset"
     return () => {
-      document.body.style.overflow = 'unset'
+      document.body.style.overflow = "unset"
     }
   }, [isMenuOpen])
 
-  // Handle scroll detection
+  useEffect(() => {
+    setIsMenuOpen(false)
+  }, [pathname])
+
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setIsMenuOpen(false)
+    }
+    window.addEventListener("keydown", onKeyDown)
+    return () => window.removeEventListener("keydown", onKeyDown)
+  }, [])
+
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 10)
-    handleScroll() // Initialize scroll state immediately
+    handleScroll()
     window.addEventListener("scroll", handleScroll)
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
@@ -34,134 +50,76 @@ export default function Navbar() {
   return (
     <header
       className={cn(
-        "fixed top-0 w-full z-50 transition-all duration-300",
-        // Use more specific styles for mobile to prevent transparency issues
-        isScrolled 
-          ? "bg-background/95 backdrop-blur-sm shadow-sm border-b" 
-          : "bg-transparent",
-        // Ensure menu is always visible on mobile
-        isMenuOpen ? "bg-black" : ""
+        "fixed top-0 w-full z-50 border-b transition-colors duration-200",
+        isScrolled || isMenuOpen ? "bg-background border-border" : "bg-transparent border-transparent",
       )}
     >
-      <div className="container flex h-20 items-center justify-between px-4 md:px-6">
-        <Link href="/" className="flex items-center space-x-3">
-          <div className="relative h-14 w-14">
-            <Image
-              src="/images/logo.png"
-              alt="Electrathon Racing Logo"
-              fill
-              className="object-contain"
-            />
+      <div className="container flex h-16 items-center justify-between px-4 md:px-6">
+        <Link href="/" className="flex items-center gap-2.5">
+          <div className="relative h-9 w-9">
+            <Image src="/images/logo.png" alt="" fill className="object-contain" />
           </div>
-          <span className="font-bold text-2xl hidden sm:inline-block">WOSS EVC</span>
+          <span className="font-display font-semibold text-lg tracking-tight">WOSS Electrathon</span>
         </Link>
 
-        <nav className="hidden md:flex items-center space-x-8">
-          <Link href="/" className="text-base font-medium hover:text-primary transition-colors">
-            Home
-          </Link>
-          <Link href="/team" className="text-base font-medium hover:text-primary transition-colors">
-            Team
-          </Link>
-          <Link href="/car" className="text-base font-medium hover:text-primary transition-colors">
-            Car
-          </Link>
-          <Link href="/sponsors" className="text-base font-medium hover:text-primary transition-colors">
-            Sponsors
-          </Link>
-          <Link href="/races" className="text-base font-medium hover:text-primary transition-colors">
-            Races
-          </Link>
-          <Button variant="ghost" size="icon" className="ml-2">
-            <Search className="h-5 w-5" />
-            <span className="sr-only">Search</span>
+        <nav className="hidden md:flex items-center gap-1">
+          {links.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              aria-current={pathname === link.href ? "page" : undefined}
+              className={cn(
+                "px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200",
+                pathname === link.href
+                  ? "text-foreground bg-secondary"
+                  : "text-muted-foreground hover:text-foreground",
+              )}
+            >
+              {link.label}
+            </Link>
+          ))}
+          <Button asChild size="sm" className="ml-3">
+            <Link href="/sponsors">Sponsor us</Link>
           </Button>
         </nav>
 
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          className={cn(
-            "md:hidden",
-            // Make hamburger icon white when not scrolled to ensure visibility
-            !isScrolled && "text-white hover:bg-white/10"
-          )}
-          onClick={() => setIsMenuOpen(true)}
+        <Button
+          variant="ghost"
+          size="icon"
+          className="md:hidden"
+          aria-expanded={isMenuOpen}
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
         >
-          <Menu className="h-6 w-6" />
-          <span className="sr-only">Menu</span>
+          {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          <span className="sr-only">{isMenuOpen ? "Close menu" : "Open menu"}</span>
         </Button>
-
-        {isMenuOpen && (
-          <div
-            className="fixed inset-0 h-screen z-[100] bg-black/100"
-            onClick={(e) => {
-              if (e.target === e.currentTarget) {
-                setIsMenuOpen(false)
-              }
-            }}
-          >
-            <div className="flex flex-col h-full">
-              <div className="flex h-20 items-center justify-between px-4 border-b border-gray-800">
-                <Link href="/" className="flex items-center space-x-3">
-                  <div className="relative h-14 w-14">
-                    <Image
-                      src="/images/logo.png"
-                      alt="Electrathon Racing Logo"
-                      fill
-                      className="object-contain"
-                    />
-                  </div>
-                  <span className="font-bold text-2xl text-white">WOSS EVC</span>
-                </Link>
-                <Button variant="ghost" size="icon" onClick={() => setIsMenuOpen(false)}>
-                  <X className="h-6 w-6 text-white" />
-                  <span className="sr-only">Close</span>
-                </Button>
-              </div>
-              
-              <nav className="flex-grow flex flex-col p-6">
-                <Link
-                  href="/"
-                  className="py-4 border-b border-gray-800 text-xl font-medium text-white hover:text-primary transition-colors"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Home
-                </Link>
-                <Link
-                  href="/team"
-                  className="py-4 border-b border-gray-800 text-xl font-medium text-white hover:text-primary transition-colors"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Team
-                </Link>
-                <Link
-                  href="/car"
-                  className="py-4 border-b border-gray-800 text-xl font-medium text-white hover:text-primary transition-colors"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Car
-                </Link>
-                <Link
-                  href="/sponsors"
-                  className="py-4 border-b border-gray-800 text-xl font-medium text-white hover:text-primary transition-colors"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Sponsors
-                </Link>
-                <Link
-                  href="/races"
-                  className="py-4 text-xl font-medium text-white hover:text-primary transition-colors"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Races
-                </Link>
-              </nav>
-            </div>
-          </div>
-        )}
       </div>
+
+      {isMenuOpen && (
+        <div className="md:hidden fixed inset-x-0 top-16 bottom-0 z-50 bg-background border-t">
+          <nav className="flex flex-col p-4">
+            {links.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                aria-current={pathname === link.href ? "page" : undefined}
+                className={cn(
+                  "px-3 py-3.5 rounded-md text-base font-medium transition-colors duration-200",
+                  pathname === link.href ? "text-foreground bg-secondary" : "text-muted-foreground",
+                )}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                {link.label}
+              </Link>
+            ))}
+            <Button asChild className="mt-4">
+              <Link href="/sponsors" onClick={() => setIsMenuOpen(false)}>
+                Sponsor us
+              </Link>
+            </Button>
+          </nav>
+        </div>
+      )}
     </header>
   )
 }
-

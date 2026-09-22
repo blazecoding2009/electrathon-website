@@ -1,104 +1,59 @@
 import Link from "next/link"
-import {Instagram, Youtube, Github } from "lucide-react"
+import { Instagram } from "lucide-react"
 import Image from "next/image"
 
 export default function Footer() {
   return (
-    <footer className="bg-background border-t">
-      <div className="container px-4 py-12 md:py-16 md:px-6">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          <div className="space-y-4">
-            <Link href="/" className="flex items-center space-x-2">
-              <div className="relative h-10 w-10">
-                <Image
-                  src="/images/logo.png?height=40&width=40"
-                  alt="Electrathon Racing Logo"
-                  fill
-                  className="object-contain"
-                />
+    <footer className="border-t bg-background">
+      <div className="container px-4 py-12 md:px-6">
+        <div className="grid grid-cols-1 gap-10 md:grid-cols-3">
+          <div className="space-y-3">
+            <Link href="/" className="flex items-center gap-2.5">
+              <div className="relative h-8 w-8">
+                <Image src="/images/logo.png" alt="" fill className="object-contain" />
               </div>
-              <span className="font-bold text-xl">WOSS EVC</span>
+              <span className="font-display font-semibold">WOSS Electrathon</span>
             </Link>
-            <p className="text-sm text-muted-foreground">
-              Powering the future of electric racing through innovation, teamwork, and sustainable technology.
+            <p className="text-sm text-muted-foreground max-w-xs">
+              Student-built electric racing at White Oaks Secondary School.
             </p>
           </div>
+
           <div>
-            <h3 className="font-medium text-sm mb-4">QUICK LINKS</h3>
-            <ul className="space-y-2">
+            <h3 className="font-mono text-xs uppercase tracking-wider text-muted-foreground mb-4">Contact</h3>
+            <ul className="space-y-2 text-sm">
               <li>
-                <Link href="/" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  Home
-                </Link>
+                <a
+                  href="mailto:wosselectrathon@gmail.com"
+                  className="text-foreground hover:text-primary transition-colors duration-200"
+                >
+                  wosselectrathon@gmail.com
+                </a>
               </li>
-              <li>
-                <Link href="/team" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  Team
-                </Link>
-              </li>
-              <li>
-                <Link href="/car" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  Car
-                </Link>
-              </li>
-              <li>
-                <Link href="/sponsors" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  Sponsors
-                </Link>
-              </li>
-              <li>
-                <Link href="/races" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  Races
-                </Link>
-              </li>
+              <li className="text-muted-foreground">1330 Montclair Drive, Oakville, Ontario</li>
             </ul>
           </div>
-            <div>
-            <h3 className="font-medium text-sm mb-4">CONTACT</h3>
-            <ul className="space-y-2">
-              <li className="text-sm text-muted-foreground">
-              Email: team@wossevc.ca
-              </li>
-              <li className="text-sm text-muted-foreground">
-              Address: 1330 Montclair Drive, Oakville, Ontario
-              </li>
-            </ul>
-            </div>
+
           <div>
-            <h3 className="font-medium text-sm mb-4">FOLLOW US</h3>
-            <div className="flex space-x-4">
-              <Link href="#" className="text-muted-foreground hover:text-primary transition-colors">
-              <Github className="h-5 w-5" />
-              <span className="sr-only">GitHub</span>
-              </Link>
-              <Link href="#" className="text-muted-foreground hover:text-primary transition-colors">
-              <Instagram className="h-5 w-5" />
-              <span className="sr-only">Instagram</span>
-              </Link>
-              <Link href="#" className="text-muted-foreground hover:text-primary transition-colors">
-              <Youtube className="h-5 w-5" />
-              <span className="sr-only">YouTube</span>
-              </Link>
-            </div>
+            <h3 className="font-mono text-xs uppercase tracking-wider text-muted-foreground mb-4">Follow</h3>
+            <a
+              href="https://www.instagram.com/wosselectrathon"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 text-sm text-foreground hover:text-primary transition-colors duration-200"
+            >
+              <Instagram className="h-4 w-4" />
+              @wosselectrathon
+            </a>
           </div>
         </div>
-        <div className="mt-12 pt-8 border-t">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <p className="text-xs text-muted-foreground">
-              &copy; {new Date().getFullYear()} Electrathon Racing Team. All rights reserved.
-            </p>
-            <div className="flex space-x-4 mt-4 md:mt-0">
-              <Link href="/privacy" className="text-xs text-muted-foreground hover:text-primary transition-colors">
-                Privacy Policy
-              </Link>
-              <Link href="/terms" className="text-xs text-muted-foreground hover:text-primary transition-colors">
-                Terms of Service
-              </Link>
-            </div>
-          </div>
+
+        <div className="mt-10 border-t pt-6">
+          <p className="text-xs text-muted-foreground">
+            &copy; {new Date().getFullYear()} WOSS Electrathon
+          </p>
         </div>
       </div>
     </footer>
   )
 }
-

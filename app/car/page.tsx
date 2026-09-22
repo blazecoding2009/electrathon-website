@@ -1,381 +1,192 @@
-"use client"
-
-import { useState, useEffect, Suspense } from "react"
 import Image from "next/image"
+import Link from "next/link"
+import { ArrowRight, FileText } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { ChevronDown, RefreshCw } from "lucide-react"
-import { Canvas, useLoader } from "@react-three/fiber"
-import { OrbitControls, Html } from "@react-three/drei"
-import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js"
-import * as THREE from "three"
-import { initializeApp } from 'firebase/app'
-import { getStorage } from 'firebase/storage'
 
-// Initialize Firebase (move this to a separate file in a real app)
-const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID
-};
-
-// Initialize Firebase
-let firebaseApp;
-let storage;
-try {
-  firebaseApp = initializeApp(firebaseConfig);
-  storage = getStorage(firebaseApp);
-} catch (error) {
-  console.error("Firebase initialization error:", error);
+export const metadata = {
+  title: "WarRig X2 — WOSS Electrathon",
+  description:
+    "WarRig X2, car #843: a student-built Electrathon racer with a three-motor brushless drivetrain, CAN-bus telemetry, and a data-driven redesign story.",
 }
 
-// Create an error boundary component for the 3D model
-function ModelErrorBoundary({ children }: { children: React.ReactNode }) {
-  const [hasError, setHasError] = useState(false)
-  const [errorMessage, setErrorMessage] = useState("")
+// As-built specifications from the WarRig X2 Engineering Design Report (2026), Table 2
+const specs = [
+  { label: "Frame", value: "6061-T6 aluminum tubing, carried over from X1" },
+  { label: "Drive motors", value: "3× Kraken X60 brushless, integrated Talon FX" },
+  { label: "Total reduction", value: "11.46:1 — 12:60 gearbox stage, 24:55 chain stage" },
+  { label: "Top speed", value: "55 km/h GPS-verified in testing" },
+  { label: "Battery", value: "12 V lead-acid, 55 Ah" },
+  { label: "Main breaker", value: "Bussmann HI-AMP 120 A waterproof" },
+  { label: "Control", value: "NI roboRIO + Raspberry Pi driver station" },
+  { label: "Telemetry", value: "CAN bus — current, voltage, RPM, temperature, GPS" },
+]
 
-  useEffect(() => {
-    const handleError = (event: ErrorEvent) => {
-      if (event.message.includes("GLTFLoader") || event.message.includes("model")) {
-        event.preventDefault()
-        setHasError(true)
-        setErrorMessage(event.message)
-      }
-    }
+const optimizations = [
+  {
+    title: "Drivetrain: one brushed motor → three Krakens",
+    story:
+      "X1's single brushed motor lost torque as it heated and capped out around 373 W. X2 runs three Kraken X60 brushless motors into a shared gearbox at a retuned 11.46:1 reduction — predicted 0–50 km/h in about 14 seconds, versus roughly 60 seconds to 40 km/h for X1.",
+  },
+  {
+    title: "Motor mount: the prototype that failed on purpose",
+    story:
+      "The first mount was 3D-printed in PLA and bolted down through a centerline bolt pattern. Bench testing showed the plate edges lifting under gearbox reaction torque — so the final machined-and-welded aluminum mount moved the bolts to the lateral edges, cutting predicted edge deflection by roughly 87% before any metal was cut.",
+  },
+  {
+    title: "Electrical: from two breaker trips to zero",
+    story:
+      "The 2025 race ended with two unexplained 40 A breaker trips and no data to diagnose them. X2 carries a correctly-sized 120 A breaker, three-tier cabling, and a live CAN telemetry stream — zero trips across all 2026 test sessions, and one chain alignment issue caught by the data before it became a failure.",
+  },
+]
 
-    window.addEventListener("error", handleError)
-    return () => window.removeEventListener("error", handleError)
-  }, [])
-
-  if (hasError) {
-    return (
-      <Html center>
-        <div className="flex flex-col items-center justify-center bg-black/20 backdrop-blur-sm p-6 rounded-lg max-w-md">
-          <p className="text-red-500 mb-4 text-center">Failed to load 3D model</p>
-          <Button onClick={() => window.location.reload()} className="flex items-center gap-2">
-            <RefreshCw className="h-4 w-4" /> Reload Page
-          </Button>
-          <div className="mt-4 text-xs text-muted-foreground text-center">
-            Error details: {errorMessage || "Unknown error"}
-          </div>
-        </div>
-      </Html>
-    )
-  }
-
-  return <>{children}</>
-}
-
-// Separate model loading component to handle errors better
-function Model({ path }: { path: string }) {
-  const [modelError, setModelError] = useState<Error | null>(null)
-  
-  // Fix the error handling by using proper progress and error callbacks
-  const gltf = useLoader(
-    GLTFLoader, 
-    path, 
-    (loader) => {
-      loader.setCrossOrigin('anonymous');
-    },
-    (error) => {
-      // Handle error properly with a valid Error object
-      console.error("GLTF loading error:", error);
-      // Create a proper error object instead of passing the empty object
-      setModelError(new Error("Failed to load 3D model"));
-    }
-  )
-
-  if (modelError) throw modelError
-  
+export default function CarPage() {
   return (
     <>
-      <primitive object={gltf.scene} scale={2.0} />
-      <ambientLight intensity={1.5} />
-      <directionalLight position={[5, 5, 5]} intensity={1} />
-      <directionalLight position={[-5, -5, -5]} intensity={0.5} />
+      {/* Hero */}
+      <section className="relative flex min-h-[70svh] items-end">
+        <Image
+          src="/images/cars/x2.jpg"
+          alt="WarRig X2, car number 843, in navy and yellow bodywork outside the shop"
+          fill
+          priority
+          className="object-cover"
+        />
+        <div className="absolute inset-0 bg-background/50" />
+        <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-background to-transparent" />
+        <div className="container relative px-4 pb-16 pt-40 md:px-6">
+          <p className="font-mono text-xs uppercase tracking-widest text-muted-foreground mb-4">
+            Car #843 · 2026 season · 3rd in the feature race
+          </p>
+          <h1 className="font-display text-4xl font-bold tracking-tight sm:text-6xl md:text-7xl">
+            WarRig X2
+          </h1>
+          <p className="mt-5 max-w-2xl text-lg text-muted-foreground">
+            A rebuild driven by race data: same proven frame as X1, all-new drivetrain and electronics. At
+            the 2026 EV Challenge it finished 3rd in the feature race, 4th overall, and took 3rd for the
+            Multimatic Engineering Design Award.
+          </p>
+        </div>
+      </section>
+
+      {/* Specs */}
+      <section aria-labelledby="specs-heading" className="border-t">
+        <div className="container px-4 py-20 md:px-6 md:py-28">
+          <h2 id="specs-heading" className="font-display text-2xl font-semibold tracking-tight sm:text-3xl">
+            As-built specifications
+          </h2>
+          <dl className="mt-10 grid gap-px overflow-hidden rounded-lg border bg-border sm:grid-cols-2">
+            {specs.map((spec) => (
+              <div key={spec.label} className="bg-card p-5">
+                <dt className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
+                  {spec.label}
+                </dt>
+                <dd className="mt-1.5 font-medium">{spec.value}</dd>
+              </div>
+            ))}
+          </dl>
+          <p className="mt-6 text-sm text-muted-foreground">
+            Figures from our 2026 Engineering Design Report, submitted to the University of Waterloo EV
+            Challenge.
+          </p>
+        </div>
+      </section>
+
+      {/* Optimization stories */}
+      <section aria-labelledby="opt-heading" className="border-t">
+        <div className="container px-4 py-20 md:px-6 md:py-28">
+          <div className="grid items-start gap-10 md:grid-cols-2">
+            <div>
+              <p className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
+                Built on data
+              </p>
+              <h2 id="opt-heading" className="mt-3 font-display text-2xl font-semibold tracking-tight sm:text-3xl">
+                Every change traces to a failure we measured
+              </h2>
+              <div className="mt-8 space-y-8">
+                {optimizations.map((opt) => (
+                  <div key={opt.title} className="border-l-2 border-primary pl-5">
+                    <h3 className="font-display text-lg font-semibold">{opt.title}</h3>
+                    <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{opt.story}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="md:sticky md:top-24">
+              <div className="relative aspect-[3/4] overflow-hidden rounded-lg border">
+                <Image
+                  src="/images/cars/gearbox.jpg"
+                  alt="The three-Kraken gearbox assembly: 12-tooth pinions driving a shared 60-tooth output gear"
+                  fill
+                  className="object-cover"
+                />
+              </div>
+              <p className="mt-3 text-sm text-muted-foreground">
+                The shared-gearbox drivetrain: three 12T pinions into one 60T output gear, then a 24:55 chain
+                stage to the rear wheel.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* X1 legacy */}
+      <section aria-labelledby="x1-heading" className="border-t">
+        <div className="container grid items-center gap-10 px-4 py-20 md:grid-cols-2 md:px-6 md:py-28">
+          <div className="relative aspect-[4/3] overflow-hidden rounded-lg border">
+            <Image
+              src="/images/cars/war.jpg"
+              alt="The WarRig aluminum chassis in the shop"
+              fill
+              className="object-cover"
+            />
+          </div>
+          <div>
+            <p className="font-mono text-xs uppercase tracking-widest text-muted-foreground">The foundation</p>
+            <h2 id="x1-heading" className="mt-3 font-display text-2xl font-semibold tracking-tight sm:text-3xl">
+              WarRig X1 — one full season of data
+            </h2>
+            <p className="mt-4 text-muted-foreground">
+              X1 ran the complete 70-minute endurance race at the 2025 EV Challenge — winning the Dennis
+              Weishar Engineering Design Award — and its telemetry log became the blueprint for X2. The
+              aluminum chassis and front end carried over unchanged: post-season inspection found no cracks,
+              no loosened fasteners, and no fatigue anywhere.
+            </p>
+            <p className="mt-4 text-muted-foreground">
+              For 2027, we're going clean-sheet at last: an all-new frame built from scratch — lighter, more
+              aerodynamic, and designed to go faster on less energy than anything we've raced before.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* EDR CTA */}
+      <section aria-labelledby="edr-heading" className="border-t">
+        <div className="container px-4 py-20 md:px-6 md:py-28">
+          <div className="rounded-lg border bg-card p-8 md:p-12">
+            <h2 id="edr-heading" className="font-display text-2xl font-semibold tracking-tight sm:text-3xl">
+              Read the full engineering story
+            </h2>
+            <p className="mt-3 max-w-2xl text-muted-foreground">
+              The complete design report covers the drivetrain math, the motor-mount FEA, the electrical
+              rebuild, and the telemetry system — written and engineered entirely by students.
+            </p>
+            <div className="mt-6 flex flex-wrap items-center gap-4">
+              <Button asChild size="lg">
+                <a href="/docs/warrig-x2-edr-2026.pdf">
+                  <FileText className="mr-2 h-4 w-4" />
+                  Engineering Design Report (PDF)
+                </a>
+              </Button>
+              <Button asChild size="lg" variant="outline">
+                <Link href="/sponsors">
+                  Support the next build
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
     </>
   )
 }
-
-function LoadingIndicator() {
-  return (
-    <Html center>
-      <div className="flex flex-col items-center justify-center">
-        <div className="w-16 h-16 border-4 border-primary/30 border-t-primary rounded-full animate-spin mb-4"></div>
-        <p className="text-primary font-medium">Loading 3D Model...</p>
-      </div>
-    </Html>
-  )
-}
-
-export default function CarPage() {
-  const [activeSection, setActiveSection] = useState<string | null>(null)
-  const [isVisible, setIsVisible] = useState(false)
-  const [modelURL, setModelURL] = useState<string>("")
-  const [isLoadingModel, setIsLoadingModel] = useState(true)
-  const [modelLoadError, setModelLoadError] = useState<string | null>(null)
-
-  useEffect(() => {
-    async function setupModel() {
-      setIsLoadingModel(true);
-      setModelLoadError(null);
-      
-      try {
-        const url = "https://firebasestorage.googleapis.com/v0/b/e-thon-website.firebasestorage.app/o/Assembly%201.gltf?alt=media&token=8a0a1c01-e3cb-49d7-95db-403041d5696e";
-        console.log("Using model URL:", url);
-        setModelURL(url);
-        setIsLoadingModel(false);
-      } catch (error) {
-        console.error("Error setting up model:", error);
-        setModelLoadError(error instanceof Error ? error.message : String(error));
-        setIsLoadingModel(false);
-      }
-    }
-    
-    setupModel();
-  }, []);
-
-  useEffect(() => {
-    setIsVisible(true)
-
-    const handleScroll = () => {
-      const scrollPosition = window.scrollY
-      const sections = document.querySelectorAll("section[id]")
-
-      sections.forEach((section) => {
-        const sectionTop = (section as HTMLElement).offsetTop - 100
-        const sectionHeight = (section as HTMLElement).offsetHeight
-
-        if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
-          setActiveSection(section.id)
-        }
-      })
-    }
-
-    window.addEventListener("scroll", handleScroll)
-    return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
-
-  const scrollToSection = (sectionId: string) => {
-    const section = document.getElementById(sectionId)
-    if (section) {
-      window.scrollTo({
-        top: section.offsetTop - 80,
-        behavior: "smooth",
-      })
-    }
-  }
-
-  return (
-    <div className="min-h-screen">
-      <section className="relative h-screen flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 z-0">
-          <Image
-            src="/images/cars/IMG_0355.jpg"
-            alt="Electrathon Car"
-            fill
-            priority
-            className="object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-background/40 to-background" />
-        </div>
-
-        <div className="container relative z-10 px-4 md:px-6 mt-20">
-          <div className="max-w-3xl mx-auto text-center space-y-8">
-            <div className="text-8xl md:text-9xl font-bold text-primary/50 opacity-100">WarRig X1</div>
-            <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
-              ENGINEERED FOR EFFICIENCY
-            </h1>
-            <p className="text-xl text-muted-foreground max-w-[700px] mx-auto">
-              Our latest Electrathon vehicle combines cutting-edge technology with efficient design to maximize range
-              and speed.
-            </p>
-          </div>
-        </div>
-
-        <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 z-10 animate-bounce">
-          <Button variant="ghost" size="icon" className="rounded-full" onClick={() => scrollToSection("specs")}>
-            <ChevronDown className="h-8 w-8" />
-          </Button>
-        </div>
-      </section>
-
-      <section id="specs" className="py-20 md:py-32 bg-background">
-        <div className="container px-4 md:px-6">
-          <div className="text-center mb-16 space-y-4">
-            <div className="inline-block rounded-lg bg-primary/10 px-3 py-1 text-sm text-primary">Specifications</div>
-            <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">Technical Details</h2>
-            <p className="text-muted-foreground text-lg max-w-[800px] mx-auto">
-              Every component of our WarRig X1 has been carefully designed and tested for maximum performance.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div className="space-y-8">
-              <div className="space-y-4">
-                <h3 className="text-2xl font-bold">Dimensions</h3>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-1">
-                    <p className="text-sm text-muted-foreground">Length</p>
-                    <p className="text-lg font-medium">80 inches</p>
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-sm text-muted-foreground">Width</p>
-                    <p className="text-lg font-medium">23 inches</p>
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-sm text-muted-foreground">Height</p>
-                    <p className="text-lg font-medium">48 inches</p>
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-sm text-muted-foreground">Frame Weight</p>
-                    <p className="text-lg font-medium">30 pounds</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <h3 className="text-2xl font-bold">Performance</h3>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-1">
-                    <p className="text-sm text-muted-foreground">Top Speed</p>
-                    <p className="text-lg font-medium">∞ mph</p>
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-sm text-muted-foreground">Range</p>
-                    <p className="text-lg font-medium">85 miles</p>
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-sm text-muted-foreground">Acceleration (0-30 mph)</p>
-                    <p className="text-lg font-medium">6.2 seconds</p>
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-sm text-muted-foreground">Drag Coefficient</p>
-                    <p className="text-lg font-medium">0.15</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <h3 className="text-2xl font-bold">Electrical System</h3>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-1">
-                    <p className="text-sm text-muted-foreground">Battery Type</p>
-                    <p className="text-lg font-medium">12V Lithium-ion</p>
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-sm text-muted-foreground">Battery Capacity</p>
-                    <p className="text-lg font-medium">48 AH</p>
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-sm text-muted-foreground">Motor Type</p>
-                    <p className="text-lg font-medium">BDC Hub Motor</p>
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-sm text-muted-foreground">Motor Power</p>
-                    <p className="text-lg font-medium">3.5 kW</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="relative h-[500px] rounded-xl overflow-hidden">
-              <Image
-                src="/images/cars/sigma.png?height=600&width=600"
-                alt="E-VOLT X1 Technical Drawing"
-                fill
-                className="object-contain"
-              />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section id="interactive" className="py-20 md:py-20 bg-background/50">
-        <div className="container px-4 md:px-6">
-          <div className="text-center mb-16 space-y-4">
-        <div className="inline-block rounded-lg bg-primary/10 px-3 py-1 text-sm text-primary">
-          Interactive Model
-        </div>
-        <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
-          Explore the WarRig X1
-        </h2>
-        <p className="text-muted-foreground text-lg max-w-[800px] mx-auto">
-          Interact with our 3D model to examine every detail of the vehicle.
-        </p>
-          </div>
-
-          <div className="h-[600px] w-full rounded-xl overflow-hidden bg-black/5">
-        {isLoadingModel ? (
-          <div className="h-full flex items-center justify-center">
-            <div className="flex flex-col items-center justify-center">
-          <div className="w-16 h-16 border-4 border-primary/30 border-t-primary rounded-full animate-spin mb-4"></div>
-          <p className="text-primary font-medium">Loading Model Data...</p>
-            </div>
-          </div>
-        ) : (
-          <Canvas camera={{ position: [0, 0, 3], fov: 75 }}>
-            <ModelErrorBoundary>
-          <Suspense fallback={<LoadingIndicator />}>
-            <Model path={modelURL} />
-          </Suspense>
-            </ModelErrorBoundary>
-            <OrbitControls
-          enableZoom={true}
-          minDistance={2}
-          maxDistance={8}
-          enablePan={true}
-            />
-          </Canvas>
-        )}
-          </div>
-          {modelLoadError && (
-        <div className="text-sm text-center text-red-400 mt-4">
-          Error: {modelLoadError}
-        </div>
-          )}
-        </div>
-      </section>
-
-      <section id="future" className="py-20 md:py-20">
-        <div className="container px-4 md:px-6">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-        <div className="space-y-6">
-          <div className="inline-block rounded-lg bg-primary/10 px-3 py-1 text-sm text-primary">Looking Ahead</div>
-          <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">The Future: WarRig X2</h2>
-          <p className="text-muted-foreground text-lg">
-            Our engineering team is already working on the next generation of our Electrathon vehicle, with
-            ambitious goals to push the boundaries even further.
-          </p>
-          <ul className="space-y-2">
-            <li className="flex items-center">
-          <div className="h-2 w-2 rounded-full bg-primary mr-2"></div>
-          <span>15% weight reduction through frame redesign</span>
-            </li>
-            <li className="flex items-center">
-          <div className="h-2 w-2 rounded-full bg-primary mr-2"></div>
-          <span>Improved aerodynamics with active elements</span>
-            </li>
-            <li className="flex items-center">
-          <div className="h-2 w-2 rounded-full bg-primary mr-2"></div>
-          <span>Enhanced motor efficiency for better range</span>
-            </li>
-            <li className="flex items-center">
-          <div className="h-2 w-2 rounded-full bg-primary mr-2"></div>
-          <span>Advanced telemetry and race strategy software</span>
-            </li>
-          </ul>
-          <Button className="rounded-full">Join Our Development Team</Button>
-        </div>
-        <div className="relative h-[400px] rounded-xl overflow-hidden bg-gradient-to-r from-background to-primary/20 flex items-center justify-center">
-          <div className="text-6xl font-bold text-primary/20">COMING SOON</div>
-        </div>
-          </div>
-        </div>
-      </section>
-    </div>
-  )
-}
-

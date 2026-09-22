@@ -2,37 +2,50 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Aesthetic direction: Refined EV-tech dark
+ * precise / electric / engineered
+ * - Type: Space Grotesk (display, 500-700) + Albert Sans (body, 400-600). 1-2 families, no Inter.
+ * - Color: cool graphite near-black bg (hsl 225 15% 4%), off-white text, ONE electric-blue
+ *   accent (hsl 212 100% 60%). Muted slate neutrals. No gradients, no glow, no purple.
+ * - Density: generous section padding, tight component spacing. 4px scale.
+ * - Radius: 6px. Separation via 1px borders + background contrast, not shadows.
+ * - Components: outlined/ghost by default; filled electric-blue for the ONE primary CTA per screen.
+ * - Imagery: real team photography, full-bleed with graphite scrim. Honest placeholders where
+ *   facts are unconfirmed (marked with .todo-tag).
+ * - Motion: quiet. 200ms ease on state changes only. No entrance fade-ins.
+ */
+
 @layer base {
   :root {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    --background: 225 15% 4%;
+    --foreground: 210 20% 96%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 224 14% 7%;
+    --card-foreground: 210 20% 96%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 224 14% 6%;
+    --popover-foreground: 210 20% 96%;
 
-    --primary: 217 91% 60%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 212 100% 60%;
+    --primary-foreground: 225 15% 6%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 222 12% 12%;
+    --secondary-foreground: 210 20% 96%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 222 12% 12%;
+    --muted-foreground: 215 12% 68%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 222 12% 14%;
+    --accent-foreground: 210 20% 96%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 210 20% 96%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --border: 222 12% 14%;
+    --input: 222 12% 16%;
+    --ring: 212 100% 60%;
 
-    --radius: 0.5rem;
+    --radius: 0.375rem;
   }
 }
 
@@ -41,12 +54,40 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
+  }
+  ::selection {
+    background: hsl(var(--primary) / 0.25);
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+  }
+  :focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
   }
 }
 
-.animate-in {
-  opacity: 1;
-  transition: opacity 1s ease-in-out;
+@layer utilities {
+  /* Honest-placeholder marker for content awaiting real facts from the team */
+  .todo-tag {
+    @apply inline-flex items-center rounded-sm border border-dashed border-muted-foreground/40 px-1.5 py-0.5 font-mono text-[11px] uppercase tracking-wider text-muted-foreground;
+  }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
