@@ -1,5 +1,5 @@
 import Image from "next/image"
-import { ArrowUpRight, FileText, Heart } from "lucide-react"
+import { FileText, Heart } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 export const metadata = {
@@ -8,35 +8,67 @@ export const metadata = {
     "The partners behind WOSS Electrathon — and how your organization can put students in the shop and a car on the grid.",
 }
 
-const partners = [
+type Sponsor = {
+  name: string
+  logo?: string
+  href?: string
+}
+
+type TileSize = "lg" | "md" | "sm"
+
+// Tile size signals tier ("lg" is reserved for Gold and Diamond)
+const sponsorTiers: { label: string; size: TileSize; sponsors: Sponsor[] }[] = [
   {
-    name: "Atura Power",
-    role: "Season sponsor",
-    detail: "An Ontario power generator investing in the next generation of energy and engineering talent.",
-    href: "https://aturapower.com/",
-    logo: "/images/sponsers/atura.webp",
+    label: "Silver",
+    size: "md",
+    sponsors: [
+      // TODO(content): Atura's 2026–27 tier unconfirmed; "probably Silver" per the team
+      { name: "Atura Power", logo: "/images/sponsers/atura.webp", href: "https://aturapower.com/" },
+      {
+        name: "InsightAL",
+        logo: "/images/sponsers/insightal.png",
+        href: "https://valorasolutionsinc.com",
+      },
+      // $500 donation (Oct 2026); official inverted logo, used with Shopify's written permission
+      { name: "Shopify", logo: "/images/sponsers/shopify.svg", href: "https://www.shopify.com" },
+      // $500 CAD donation (Oct 2026). No website to link yet, per the team
+      { name: "MyGalaxy Financial", logo: "/images/sponsers/mygalaxy.png" },
+    ],
   },
   {
-    name: "Lions Club of Oakville",
-    role: "Season sponsor",
-    detail: "Serving the Oakville community for decades, invested in hands-on STEM education.",
-    logo: "/images/sponsers/lions.png",
+    label: "Bronze",
+    size: "sm",
+    sponsors: [
+      { name: "Maple Spark", logo: "/images/sponsers/maplespark.png", href: "https://maplespark.ai" },
+      // In-kind: donated CNC and laser equipment. TODO(content): website URL unconfirmed
+      { name: "YD Canada", logo: "/images/sponsers/ydcanada.png" },
+      { name: "RPM Industrial Rubber Parts", logo: "/images/sponsers/rpm.webp", href: "https://www.rpmrubberparts.com" },
+    ],
   },
   {
-    name: "Orbit Robotics",
-    role: "Technical support",
-    detail: "Build support and technical guidance throughout the WarRig X2 season.",
+    label: "Technical support",
+    size: "sm",
+    sponsors: [{ name: "Orbit Robotics", logo: "/images/sponsers/orbit.png", href: "https://1360.ca" }],
+  },
+  {
+    label: "Honorary partner",
+    size: "sm",
+    sponsors: [
+      {
+        name: "Chris Hadfield",
+        logo: "/images/sponsers/hadfield.png",
+        href: "https://www.chrishadfield.com",
+      },
+    ],
   },
 ]
 
-// Bronze tier: small logo and name on the website, per the 2027 sponsorship packet
-const bronzeSponsors = [
-  {
-    name: "Maple Spark",
-    href: "https://maplespark.ai",
-    logo: "/images/sponsers/maplespark.png",
-  },
-]
+// One logo box per tier: wide wordmarks stay width-limited, square emblems get room
+const tileSizes: Record<TileSize, { tile: string; logo: string }> = {
+  lg: { tile: "h-40 sm:w-72", logo: "h-24" },
+  md: { tile: "h-32 sm:w-60", logo: "h-16" },
+  sm: { tile: "h-28 sm:w-52", logo: "h-12" },
+}
 
 const tiers = [
   {
@@ -78,6 +110,32 @@ const reasons = [
   },
 ]
 
+function SponsorTile({ sponsor, size }: { sponsor: Sponsor; size: TileSize }) {
+  const { tile, logo } = tileSizes[size]
+  // Logo only; its alt text carries the name (and the link's accessible name)
+  const body = sponsor.logo ? (
+    <span className={`relative block w-full ${logo}`}>
+      <Image src={sponsor.logo} alt={sponsor.name} fill className="object-contain" />
+    </span>
+  ) : (
+    <span className="font-display text-lg font-semibold">{sponsor.name}</span>
+  )
+  const base = `flex w-full flex-col items-center justify-center rounded-lg border bg-card px-6 text-center ${tile}`
+
+  return sponsor.href ? (
+    <a
+      href={sponsor.href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={`${base} transition-colors duration-200 hover:border-primary/60 hover:bg-secondary`}
+    >
+      {body}
+    </a>
+  ) : (
+    <div className={base}>{body}</div>
+  )
+}
+
 export default function SponsorsPage() {
   return (
     <>
@@ -101,56 +159,23 @@ export default function SponsorsPage() {
           <h2 id="partners-heading" className="font-display text-2xl font-semibold tracking-tight sm:text-3xl">
             Our partners
           </h2>
-          <ul className="mt-10 grid gap-px overflow-hidden rounded-lg border bg-border md:grid-cols-3">
-            {partners.map((partner) => (
-              <li key={partner.name} className="bg-card p-8">
-                {partner.logo && (
-                  <div className="relative mb-6 h-16 w-40">
-                    <Image src={partner.logo} alt="" fill className="object-contain object-left" />
-                  </div>
-                )}
-                <p className="font-mono text-xs uppercase tracking-wider text-primary">{partner.role}</p>
-                <h3 className="mt-2 font-display text-xl font-semibold">
-                  {partner.href ? (
-                    <a
-                      href={partner.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 hover:text-primary transition-colors duration-200"
-                    >
-                      {partner.name}
-                      <ArrowUpRight className="h-4 w-4 text-muted-foreground" />
-                    </a>
-                  ) : (
-                    partner.name
-                  )}
-                </h3>
-                <p className="mt-2 text-sm text-muted-foreground">{partner.detail}</p>
-              </li>
-            ))}
-          </ul>
 
-          <h3 className="mt-10 font-mono text-xs uppercase tracking-wider text-muted-foreground">
-            Bronze sponsors
-          </h3>
-          <ul className="mt-4 flex flex-wrap gap-x-10 gap-y-4">
-            {bronzeSponsors.map((sponsor) => (
-              <li key={sponsor.name}>
-                <a
-                  href={sponsor.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-3 font-display text-lg font-medium hover:text-primary transition-colors duration-200"
-                >
-                  <span className="relative h-10 w-10 shrink-0">
-                    <Image src={sponsor.logo} alt="" fill className="object-contain" />
-                  </span>
-                  {sponsor.name}
-                  <ArrowUpRight className="h-4 w-4 text-muted-foreground" />
-                </a>
-              </li>
+          <div className="mt-10 divide-y border-y">
+            {sponsorTiers.map((tier) => (
+              <div key={tier.label} className="grid gap-4 py-8 md:grid-cols-[160px_1fr] md:gap-8">
+                <h3 className="font-mono text-xs uppercase tracking-wider text-muted-foreground md:pt-3">
+                  {tier.label}
+                </h3>
+                <ul className="flex flex-wrap gap-4">
+                  {tier.sponsors.map((sponsor) => (
+                    <li key={sponsor.name} className="w-full sm:w-auto">
+                      <SponsorTile sponsor={sponsor} size={tier.size} />
+                    </li>
+                  ))}
+                </ul>
+              </div>
             ))}
-          </ul>
+          </div>
         </div>
       </section>
 

@@ -36,7 +36,7 @@ const asBuilt = [
   { value: "11.46:1", label: "Two-stage gear reduction" },
 ]
 
-const partners = ["Atura Power", "Lions Club of Oakville"]
+const partners = ["Atura Power", "InsightAL", "Shopify", "MyGalaxy Financial"]
 
 export default function Home() {
   return (
